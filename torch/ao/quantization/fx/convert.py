@@ -288,6 +288,9 @@ def convert(model: GraphModule, is_reference: bool = False,
         qconfig_map,
         custom_module_classes=custom_module_classes)
 
+    for k, v in matches.items():
+        print("           MATCHES", k, v)
+
     if model._equalization_qconfig_map is not None:
         # If we want to do equalization then do the following:
         # Calculate the equalization scale, update the observers with the scaled

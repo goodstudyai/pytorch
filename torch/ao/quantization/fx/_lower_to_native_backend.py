@@ -204,7 +204,9 @@ SPECIAL_PATTERN_LOWER_MODULE_MAP = {
 #   1) The inner reference module class
 #   2) The replacement quantized module class for lowering
 LOWER_FUSED_MODULE_MAP: Dict[Type[nn.Module], Tuple[Type[nn.Module], Type[ReferenceableQuantizedModule]]] = {
-    nni.LinearReLU: (nnqr.Linear, nniq.LinearReLU)
+    nni.LinearReLU: (nnqr.Linear, nniq.LinearReLU),
+    # WANT THIS
+    #nni.LinearBn1d: (nnqr.Linear, nnq.Linear)
 }
 
 def _lower_weighted_ref_module(model: QuantizedGraphModule) -> QuantizedGraphModule:
@@ -521,7 +523,9 @@ def _lower_to_native_backend(
     to the native backend in PyTorch (fbgemm/qnnpack), both backends shares the same
     operator signature so they can be lowered with the same function
     """
+    #print("BEFORE", model)
     model = _lower_weighted_ref_module(model)
+    #print("AFTER", model)
     for pattern, replacement in get_fbgemm_patterns_and_replacements():
         subgraph_rewriter_FORKED_DO_NOT_USE.replace_pattern(model, pattern, replacement)
     _lower_quantized_binary_op(model, qconfig_map)
